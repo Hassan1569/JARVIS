@@ -1,33 +1,34 @@
 # Development Log — JARVIS
 
 ## Current Project Status
-Initialization complete. Documentation being finalized. No application code exists yet.
+Phase 1 (Basic MVP) is complete. The app can hold text-based conversations with an LLM.
 
 ## Current Development Phase
-Phase 0 — Initialization & Documentation (STEP 2).
+Phase 1 Complete. Ready to start Phase 2 (Voice).
 
 ## Completed Features
-- Folder structure created via PowerShell script.
-- .gitignore, .env.example, README.md, requirements.txt stub.
-- Six documentation files populated (this step).
+- Phase 0: Project initialization, folder structure, documentation.
+- Phase 1: PySide6 UI with dark theme, text input/output.
+- Phase 1: LLM provider abstraction (Ollama + OpenAI-compatible).
+- Phase 1: Local LLM integration tested successfully with `qwen3.5:4b`.
 
 ## Current Implementation
-None. No Python source files exist.
+- `app/config.py`: Loads `.env` and manages settings.
+- `app/core/llm.py`: `LLMProvider` ABC with `OllamaProvider` (using OpenAI compatible endpoint) and `OpenAICompatProvider`.
+- `app/core/orchestrator.py`: Manages conversation history and sends requests to LLM.
+- `desktop/window.py`: PySide6 UI with chat display and input field.
+- `app/main.py`: Entry point and logging setup.
 
 ## Important Technical Decisions
-- LLM provider abstraction from day one (ABC in core/llm.py) — allows Ollama + OpenAI-compatible without refactor.
-- No code generation from LLM — tool registry + schema validation only.
-- SQLite-first memory; ChromaDB deferred to Phase 4 optional.
-- Provider default = Ollama but OpenAI/DeepSeek ready via env.
-- PySide6 chosen (native Windows, LGPL, mature).
-- Phase ordering — voice deferred to P2 because P1 proves the loop first (cheapest validation).
-- No FastAPI in MVP — not needed until/unless remote control is required.
+- Switched `OllamaProvider` to use the OpenAI-compatible `/v1` endpoint instead of the legacy `/api/chat` endpoint for better stability.
+- Used Python `threading` in the UI to prevent the app from freezing while waiting for the LLM response.
 
 ## Known Issues
-- None yet.
+- None for Phase 1.
 
 ## Dependencies Installed
-- None (requirements.txt is placeholder).
+- PySide6, python-dotenv, openai, requests, pytest.
+- Local AI Model: `qwen3.5:4b` via Ollama.
 
 ## Next Immediate Task
-Complete STEP 3 — cross-validate the six documents for consistency, then request approval to begin Phase 1.
+Phase 2 — Add Voice capabilities (STT, TTS, Wake word).

@@ -18,23 +18,23 @@ class LLMProvider(ABC):
 
 class OllamaProvider(LLMProvider):
     def __init__(self):
-        self.url = f"{Config.OLLAMA_BASE_URL}/api/chat"
+        # Hum Ollama ke OpenAI-compatible endpoint ko use karenge
+        self.base_url = f"{Config.OLLAMA_BASE_URL}/v1"
         self.model = Config.OLLAMA_MODEL
+        # OpenAI client ko Ollama ke local server par point karein
+        self.client = OpenAI(base_url=self.base_url, api_key="ollama") 
 
     def chat(self, messages: list[dict]) -> LLMResponse:
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "stream": False
-        }
         try:
-            response = requests.post(self.url, json=payload, timeout=60)
-            response.raise_for_status()
-            data = response.json()
-            return LLMResponse(content=data.get("message", {}).get("content", ""))
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                timeout=60
+            )
+            return LLMResponse(content=response.choices[0].message.content)
         except Exception as e:
             logger.error(f"Ollama API Error: {e}")
-            return LLMResponse(content=f"Error: Could not reach Ollama. Ensure it is running. ({str(e)})")
+            return LLMResponse(content=f"Error: Could not reach Ollama. ({str(e)})")
 
 class OpenAICompatProvider(LLMProvider):
     def __init__(self):
